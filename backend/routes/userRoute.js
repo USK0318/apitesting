@@ -16,7 +16,7 @@ router.use(cookieParser());
 const authenticateToken = (req, res, next) => {
     const token = req.cookies?.accessToken || req.headers['authorization']?.split(' ')[1];
     const refreshToken = req.cookies?.refreshToken;
-    console.log('token', token);
+    // console.log('token', token);
 
     // Check if access token is provided
     if (!token) {
