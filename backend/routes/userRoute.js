@@ -60,10 +60,28 @@ const authenticateToken = (req, res, next) => {
     });
 };
 // Validation rules for registration and login
+
 const validateUser = [
+    check('name', 'Name is required and should be at least 3 characters')
+        .isLength({ min: 3 })
+        .matches(/^[a-zA-Z\s]+$/).withMessage('Name can only contain letters and spaces'),
+
     check('email', 'Email is not valid').isEmail(),
-    check('password', 'Password must be 6 or more characters').isLength({ min: 6 })
+
+    check('password', 'Password must be 6 or more characters')
+        .isLength({ min: 6 })
+        .matches(/[a-z]/).withMessage('Password must contain at least one lowercase letter')
+        .matches(/[A-Z]/).withMessage('Password must contain at least one uppercase letter')
+        .matches(/\d/).withMessage('Password must contain at least one number')
+        .matches(/[\W_]/).withMessage('Password must contain at least one special character'),
+    
+    check('phone', 'Phone number must be valid')
+        .isMobilePhone().withMessage('Invalid phone number format')
+        .isLength({ min: 10, max: 15 }).withMessage('Phone number should be between 10 to 15 digits')
 ];
+
+
+
 
 // Register endpoint
 router.post('/register', validateUser, async (req, res) => {
@@ -91,7 +109,7 @@ router.post('/register', validateUser, async (req, res) => {
 });
 
 // Login endpoint
-router.post('/login', validateUser, async (req, res) => {
+router.post('/login', async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
